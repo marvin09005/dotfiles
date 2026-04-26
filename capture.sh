@@ -40,7 +40,6 @@ echo "Respaldando configuraciones de sistema (SDDM, GRUB, Snapper)..."
 # SDDM
 [ -f "/etc/sddm.conf" ] && cp -f "/etc/sddm.conf" "$DOTFILES_DIR/system/sddm/"
 [ -d "/etc/sddm.conf.d" ] && cp -rf "/etc/sddm.conf.d" "$DOTFILES_DIR/system/sddm/"
-# Backup del tema activo de SDDM
 SDDM_THEME=$(grep "^Current=" /etc/sddm.conf | cut -d'=' -f2)
 [ -n "$SDDM_THEME" ] && [ -d "/usr/share/sddm/themes/$SDDM_THEME" ] && cp -rf "/usr/share/sddm/themes/$SDDM_THEME" "$DOTFILES_DIR/system/sddm/"
 
@@ -56,8 +55,15 @@ fi
 [ -d "/etc/snapper/configs" ] && cp -rf "/etc/snapper/configs/." "$DOTFILES_DIR/system/snapper/"
 
 # --- 6. Lista de Paquetes ---
-echo "Generando lista de paquetes..."
+echo "Generando lista de paquetes con paru..."
 pacman -Qq > "$DOTFILES_DIR/pkg_list.txt"
-yay -Qqm > "$DOTFILES_DIR/aur_list.txt"
+if command -v paru &> /dev/null; then
+    paru -Qqm > "$DOTFILES_DIR/aur_list.txt"
+elif command -v yay &> /dev/null; then
+    echo "Aviso: paru no encontrado, usando yay para generar la lista de AUR temporalmente."
+    yay -Qqm > "$DOTFILES_DIR/aur_list.txt"
+else
+    echo "Aviso: No se encontró paru ni yay. La lista de AUR podría estar incompleta."
+fi
 
 echo "✨ Proceso terminado en $DOTFILES_DIR"

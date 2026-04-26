@@ -4,17 +4,19 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_DIR="$HOME/.config"
 BACKUP_DIR="$HOME/dotfiles_old_$(date +%Y%m%d_%H%M%S)"
 
-echo "🚀 Iniciando instalación completa de Dotfiles..."
+echo "🚀 Iniciando instalación completa de Dotfiles (con paru)..."
 
 # --- 1. Paquetes ---
-if ! command -v yay &> /dev/null; then
+if ! command -v paru &> /dev/null; then
+    echo "Instalando paru (AUR helper)..."
     sudo pacman -S --needed git base-devel
-    git clone https://aur.archlinux.org/yay.git /tmp/yay
-    cd /tmp/yay && makepkg -si --noconfirm
+    git clone https://aur.archlinux.org/paru.git /tmp/paru
+    cd /tmp/paru && makepkg -si --noconfirm
     cd "$DOTFILES_DIR"
 fi
+
 [ -f "$DOTFILES_DIR/pkg_list.txt" ] && sudo pacman -S --needed --noconfirm - < "$DOTFILES_DIR/pkg_list.txt"
-[ -f "$DOTFILES_DIR/aur_list.txt" ] && yay -S --needed --noconfirm - < "$DOTFILES_DIR/aur_list.txt"
+[ -f "$DOTFILES_DIR/aur_list.txt" ] && paru -S --needed --noconfirm - < "$DOTFILES_DIR/aur_list.txt"
 
 # --- 2. Función de Seguridad ---
 deploy_copy() {
@@ -50,7 +52,6 @@ echo "⚙️ Aplicando configuraciones de sistema (SDDM, GRUB, Snapper)..."
 if [ -d "$DOTFILES_DIR/system/sddm" ]; then
     sudo cp -f "$DOTFILES_DIR/system/sddm/sddm.conf" /etc/ 2>/dev/null
     [ -d "$DOTFILES_DIR/system/sddm/sddm.conf.d" ] && sudo cp -rf "$DOTFILES_DIR/system/sddm/sddm.conf.d" /etc/
-    # Copiar tema a /usr/share/sddm/themes
     for theme in "$DOTFILES_DIR/system/sddm/"*; do
         [ -d "$theme" ] && [ "$(basename "$theme")" != "sddm.conf.d" ] && sudo cp -rf "$theme" /usr/share/sddm/themes/
     done
@@ -69,7 +70,6 @@ fi
 if [ -d "$DOTFILES_DIR/system/snapper" ]; then
     sudo mkdir -p /etc/snapper/configs
     sudo cp -rf "$DOTFILES_DIR/system/snapper/." /etc/snapper/configs/
-    echo "Recuerda ejecutar 'snapper -c <config> create-config /' si es una instalación desde cero."
 fi
 
-echo "✅ ¡Instalación completada! Revisa $BACKUP_DIR para tus archivos antiguos."
+echo "✅ ¡Instalación completada! Revisa $BACKUP_DIR para tus archivos originales."
