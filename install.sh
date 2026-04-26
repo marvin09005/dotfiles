@@ -6,72 +6,70 @@ BACKUP_DIR="$HOME/dotfiles_old_$(date +%Y%m%d_%H%M%S)"
 
 echo "🚀 Iniciando instalación completa de Dotfiles..."
 
-# --- 1. Instalación de Paquetes ---
-echo "📦 Instalando dependencias del sistema..."
-
+# --- 1. Paquetes ---
 if ! command -v yay &> /dev/null; then
-    echo "Instalando yay (AUR helper)..."
     sudo pacman -S --needed git base-devel
     git clone https://aur.archlinux.org/yay.git /tmp/yay
     cd /tmp/yay && makepkg -si --noconfirm
     cd "$DOTFILES_DIR"
 fi
-
 [ -f "$DOTFILES_DIR/pkg_list.txt" ] && sudo pacman -S --needed --noconfirm - < "$DOTFILES_DIR/pkg_list.txt"
 [ -f "$DOTFILES_DIR/aur_list.txt" ] && yay -S --needed --noconfirm - < "$DOTFILES_DIR/aur_list.txt"
 
-# --- 2. Función de Seguridad (Backup) ---
+# --- 2. Función de Seguridad ---
 deploy_copy() {
-    local src=$1
-    local dest=$2
-
+    local src=$1 dest=$2
     if [ -e "$dest" ]; then
-        echo "Respaldo: moviendo $dest a $BACKUP_DIR"
         mkdir -p "$BACKUP_DIR/$(dirname "$dest" | sed "s|$HOME/||")"
-        mv "$dest" "$BACKUP_DIR/$(echo "$dest" | sed "s|$HOME/||")"
+        mv "$dest" "$BACKUP_DIR/$(echo "$dest" | sed "s|$HOME/||")" 2>/dev/null
     fi
-
     mkdir -p "$(dirname "$dest")"
     cp -rf "$src" "$dest"
 }
 
-echo "📂 Desplegando archivos de configuración (con respaldo en $BACKUP_DIR)..."
+echo "📂 Desplegando archivos..."
 mkdir -p "$BACKUP_DIR"
-
-# Carpetas en .config
-for conf in "$DOTFILES_DIR/config/"*; do
-    [ -e "$conf" ] && deploy_copy "$conf" "$CONFIG_DIR/$(basename "$conf")"
+for conf in "$DOTFILES_DIR/config/"*; do [ -e "$conf" ] && deploy_copy "$conf" "$CONFIG_DIR/$(basename "$conf")"; done
+for file in "$DOTFILES_DIR/home/".*; do 
+    [[ "$(basename "$file")" != "." && "$(basename "$file")" != ".." ]] && deploy_copy "$file" "$HOME/$(basename "$file")"
 done
-
-# Archivos en Home
-for file in "$DOTFILES_DIR/home/".*; do
-    if [[ "$(basename "$file")" != "." && "$(basename "$file")" != ".." ]]; then
-        deploy_copy "$file" "$HOME/$(basename "$file")"
-    fi
-done
-
-# Scripts personales
-if [ -d "$DOTFILES_DIR/bin" ]; then
-    echo "Sincronizando scripts en ~/.local/bin..."
-    mkdir -p "$HOME/.local/bin"
-    cp -rf "$DOTFILES_DIR/bin/"* "$HOME/.local/bin/"
-fi
-
-# Wallpapers
-if [ -d "$DOTFILES_DIR/wallpapers" ]; then
-    echo "Instalando Wallpapers..."
-    mkdir -p "$HOME/Imágenes/Wallpapers"
-    cp -rf "$DOTFILES_DIR/wallpapers/"* "$HOME/Imágenes/Wallpapers/"
-fi
+[ -d "$DOTFILES_DIR/bin" ] && cp -rf "$DOTFILES_DIR/bin/"* "$HOME/.local/bin/"
+[ -d "$DOTFILES_DIR/wallpapers" ] && cp -rf "$DOTFILES_DIR/wallpapers/"* "$HOME/Imágenes/Wallpapers/"
 
 # --- 3. Temas, Iconos y Fuentes ---
-echo "🎨 Instalando Temas, Iconos y Fuentes..."
 mkdir -p "$HOME/.local/share/themes" "$HOME/.local/share/icons" "$HOME/.local/share/fonts"
-
 [ -d "$DOTFILES_DIR/themes" ] && cp -rf "$DOTFILES_DIR/themes/"* "$HOME/.local/share/themes/" 2>/dev/null
 [ -d "$DOTFILES_DIR/icons" ] && cp -rf "$DOTFILES_DIR/icons/"* "$HOME/.local/share/icons/" 2>/dev/null
 [ -d "$DOTFILES_DIR/fonts" ] && cp -rf "$DOTFILES_DIR/fonts/"* "$HOME/.local/share/fonts/" 2>/dev/null
-
 fc-cache -fv
 
-echo "✅ ¡Instalación completada! Los archivos originales se guardaron en $BACKUP_DIR"
+# --- 4. SYSTEM: SDDM, GRUB, Snapper (Requiere sudo) ---
+echo "⚙️ Aplicando configuraciones de sistema (SDDM, GRUB, Snapper)..."
+
+# SDDM
+if [ -d "$DOTFILES_DIR/system/sddm" ]; then
+    sudo cp -f "$DOTFILES_DIR/system/sddm/sddm.conf" /etc/ 2>/dev/null
+    [ -d "$DOTFILES_DIR/system/sddm/sddm.conf.d" ] && sudo cp -rf "$DOTFILES_DIR/system/sddm/sddm.conf.d" /etc/
+    # Copiar tema a /usr/share/sddm/themes
+    for theme in "$DOTFILES_DIR/system/sddm/"*; do
+        [ -d "$theme" ] && [ "$(basename "$theme")" != "sddm.conf.d" ] && sudo cp -rf "$theme" /usr/share/sddm/themes/
+    done
+fi
+
+# GRUB
+if [ -d "$DOTFILES_DIR/system/grub" ]; then
+    sudo cp -f "$DOTFILES_DIR/system/grub/grub" /etc/default/grub 2>/dev/null
+    for theme in "$DOTFILES_DIR/system/grub/"*; do
+        [ -d "$theme" ] && sudo cp -rf "$theme" /usr/share/grub/themes/ 2>/dev/null
+    done
+    sudo grub-mkconfig -o /boot/grub/grub.cfg
+fi
+
+# Snapper
+if [ -d "$DOTFILES_DIR/system/snapper" ]; then
+    sudo mkdir -p /etc/snapper/configs
+    sudo cp -rf "$DOTFILES_DIR/system/snapper/." /etc/snapper/configs/
+    echo "Recuerda ejecutar 'snapper -c <config> create-config /' si es una instalación desde cero."
+fi
+
+echo "✅ ¡Instalación completada! Revisa $BACKUP_DIR para tus archivos antiguos."
