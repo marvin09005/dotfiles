@@ -19,18 +19,39 @@ git clone https://github.com/marvin09005/dotfiles.git ~/dotfiles && cd ~/dotfile
 - `capture.sh`: Script para actualizar este repositorio con los archivos actuales del sistema.
 - `install.sh`: Script para instalar estas configuraciones en un sistema nuevo.
 
-## Cómo usar
+## 🛠️ Instalación manual y dependencias
 
-### 1. Guardar cambios (Actualizar el repo)
-Si haces cambios en tu sistema y quieres guardarlos aquí:
-```bash
-./capture.sh
-```
+### Dependencias principales
+Para que todas las configuraciones funcionen correctamente, asegúrate de tener instalados los siguientes programas (el script de instalación intentará instalarlos automáticamente si usas Arch Linux):
 
-### 2. Instalar en un sistema nuevo
-```bash
-git clone <url-de-tu-repo> ~/dotfiles
-cd ~/dotfiles
-chmod +x install.sh capture.sh
-./install.sh
-```
+- **Window Manager:** `swayfx` o `sway`
+- **Barra:** `waybar`
+- **Lanzador:** `rofi` (o `rofi-lbonn-wayland-git`)
+- **Terminal:** `kitty`
+- **Notificaciones:** `mako` y `swaync`
+- **Explorador:** `yazi`
+- **AUR Helper:** `paru`
+- **Otros:** `fastfetch`, `neovim`, `sddm`, `grub`.
+
+### Pasos manuales
+Si prefieres no usar el comando rápido, sigue estos pasos:
+
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/marvin09005/dotfiles.git ~/dotfiles
+   ```
+2. **Entrar al directorio:**
+   ```bash
+   cd ~/dotfiles
+   ```
+3. **Dar permisos de ejecución:**
+   ```bash
+   chmod +x install.sh capture.sh
+   ```
+4. **Ejecutar el instalador:**
+   ```bash
+   ./install.sh
+   ```
+
+---
+*Nota: Para actualizar el repositorio con tus cambios locales actuales, ejecuta `./capture.sh` antes de hacer un commit.*
