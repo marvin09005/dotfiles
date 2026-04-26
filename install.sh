@@ -1,65 +1,61 @@
 #!/bin/bash
 
-# Directorio donde están tus dotfiles (donde se ejecute el script)
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_DIR="$HOME/.config"
 
-echo "🚀 Iniciando la instalación de configuraciones..."
+echo "🚀 Iniciando instalación completa de Dotfiles..."
 
-# Función para copiar de forma segura
-deploy_config() {
-    local src=$1
-    local dest=$2
+# --- 1. Instalación de Paquetes ---
+echo "📦 Instalando dependencias del sistema..."
 
-    echo "Copiando $src -> $dest"
-    
-    # Crear directorio destino si no existe
-    mkdir -p "$(dirname "$dest")"
-    
-    # Copiar recursivamente
-    cp -rf "$src" "$dest"
-}
-
-# --- Copiar carpetas de .config ---
-# Añade o quita nombres de carpetas según necesites
-configs=(
-    "sway"
-    "waybar"
-    "rofi"
-    "kitty"
-    "mako"
-    "swaync"
-    "swaylock"
-    "swayidle"
-    "nwg-look"
-    "fastfetch"
-    "yazi"
-    "zsh"
-)
-
-for conf in "${configs[@]}"; do
-    if [ -d "$DOTFILES_DIR/config/$conf" ]; then
-        deploy_config "$DOTFILES_DIR/config/$conf" "$CONFIG_DIR/$conf"
-    fi
-done
-
-# --- Archivos sueltos en .config ---
-if [ -f "$DOTFILES_DIR/config/colors.css" ]; then
-    deploy_config "$DOTFILES_DIR/config/colors.css" "$CONFIG_DIR/colors.css"
+# Instalar yay si no existe
+if ! command -v yay &> /dev/null; then
+    echo "Instalando yay (AUR helper)..."
+    sudo pacman -S --needed git base-devel
+    git clone https://aur.archlinux.org/yay.git /tmp/yay
+    cd /tmp/yay && makepkg -si --noconfirm
+    cd "$DOTFILES_DIR"
 fi
 
-# --- Archivos en el Home (raíz) ---
-home_files=(
-    ".zshrc"
-    ".bashrc"
-    ".gitconfig"
-    ".Xresources"
-)
+# Instalar paquetes de pacman
+if [ -f "$DOTFILES_DIR/pkg_list.txt" ]; then
+    echo "Instalando paquetes de los repositorios oficiales..."
+    sudo pacman -S --needed --noconfirm - < "$DOTFILES_DIR/pkg_list.txt"
+fi
 
-for file in "${home_files[@]}"; do
-    if [ -f "$DOTFILES_DIR/home/$file" ]; then
-        deploy_config "$DOTFILES_DIR/home/$file" "$HOME/$file"
-    fi
+# Instalar paquetes de AUR
+if [ -f "$DOTFILES_DIR/aur_list.txt" ]; then
+    echo "Instalando paquetes de AUR..."
+    yay -S --needed --noconfirm - < "$DOTFILES_DIR/aur_list.txt"
+fi
+
+# --- 2. Despliegue de Configuraciones ---
+echo "📂 Desplegando archivos de configuración..."
+
+deploy_copy() {
+    mkdir -p "$(dirname "$2")"
+    cp -rf "$1" "$2"
+}
+
+# Carpetas en .config
+for conf in "$DOTFILES_DIR/config/"*; do
+    [ -e "$conf" ] && deploy_copy "$conf" "$CONFIG_DIR/$(basename "$conf")"
 done
 
-echo "✅ ¡Instalación completada! Todas las configuraciones se han movido a su lugar."
+# Archivos en Home
+for file in "$DOTFILES_DIR/home/".*; do
+    [ -e "$file" ] && deploy_copy "$file" "$HOME/$(basename "$file")"
+done
+
+# --- 3. Temas, Iconos y Fuentes ---
+echo "🎨 Instalando Temas, Iconos y Fuentes..."
+mkdir -p "$HOME/.local/share/themes" "$HOME/.local/share/icons" "$HOME/.local/share/fonts"
+
+[ -d "$DOTFILES_DIR/themes" ] && cp -rf "$DOTFILES_DIR/themes/"* "$HOME/.local/share/themes/" 2>/dev/null
+[ -d "$DOTFILES_DIR/icons" ] && cp -rf "$DOTFILES_DIR/icons/"* "$HOME/.local/share/icons/" 2>/dev/null
+[ -d "$DOTFILES_DIR/fonts" ] && cp -rf "$DOTFILES_DIR/fonts/"* "$HOME/.local/share/fonts/" 2>/dev/null
+
+# Refrescar caché de fuentes
+fc-cache -fv
+
+echo "✅ ¡Instalación completada! Reinicia tu sesión para ver todos los cambios."
