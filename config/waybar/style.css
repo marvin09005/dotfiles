@@ -1,0 +1,226 @@
+* {
+  border: none;
+  border-radius: 0px;
+  font-family: "DaddyTimeMono Nerd Font";
+  font-size: 18px;
+  min-height: 10px;
+}
+
+window#waybar {
+  background-color: transparent;
+  border: none;
+}
+
+#workspaces,
+#window,
+.modules-center{
+  background-color: rgba(30, 30, 46, 0.7);
+  border: 3px solid #cba6f7;
+  border-radius: 12px; /* Bordes bien redondeados */
+  margin: 5px 10px 0px 2px;     /* Separación EXTERNA entre cada píldora */
+  padding: 0px 10px;   /* Separación INTERNA para que los íconos no toquen el borde */
+}
+
+.modules-right {
+  background-color: rgba(30, 30, 46, 0.7);
+  border: 3px solid #cba6f7;
+  border-radius: 12px; /* Bordes bien redondeados */
+  margin: 5px 2px 0px 0px;     /* Separación EXTERNA entre cada píldora */
+  padding: 0px 10px;   /* Separación INTERNA para que los íconos no toquen el borde */
+}
+
+#workspaces {
+  padding: 0; /* Los workspaces (Pacman) ya tienen sus propios márgenes */
+}
+
+#window {
+  padding: 0px 15px; /* Un poco más de espacio a los lados para el texto de la ventana */
+}
+
+#backlight {
+  color: #fbecc9;
+  margin: 0px 10px 0px 10px;
+  font-size: 18px;
+}
+
+#backlight-slider trough highlight {
+  background-image: linear-gradient(to right, #fbecc9 30%, #f5c2e7 50%, #fab387 5000%);
+  border-radius: 10px;
+}
+
+#pulseaudio {
+  color: #afd0fc;
+  margin: 0px 10px 0px 10px;
+  font-size: 18px;
+}
+
+#pulseaudio.muted {
+  color: #eba0ac;
+  margin: 0px 15px 0px 10px;
+}
+
+#pulseaudio-slider trough highlight {
+  background-image: linear-gradient(to right, #afd0fc 30%, #89dceb 50%, #74c7ec 5000%);
+  border-radius: 10px;
+}
+
+scale trough {
+  all: unset;
+  background-color: #22242b;
+  box-shadow: 0 2px 3px 2px #06060b;
+  border-radius: 16px;
+  min-height: 10px;
+  min-width: 90px;
+  margin: 0px 5px 0px 0px;
+}
+
+scale slider {
+  background-image: none;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+#network {
+  color: #afd0fc;
+  font-size: 18px;
+  border-radius: 100%;
+  margin: 0px 10px 0px 5px;
+}
+
+#network.disconnected {
+  color: #eba0ac;
+}
+
+#bluetooth {
+  color: #afd0fc;
+  font-size: 18px;
+  margin: 0px 5px 0px 10px;
+}
+
+#bluetooth.disabled {
+  color: #eba0ac;
+}
+
+#bluetooth.connected {
+  color: #c8f0c7;
+}
+
+#custom-essid {
+  font-size: 14px;
+  border-radius: 100%;
+  color: #afd0fc;
+  margin: 1px 5px 0px 5px;
+}
+
+#custom-separator {
+  font-weight: bold;
+  font-size: 27px;
+  color: #45475a;
+}
+
+#custom-ram {
+  border-radius: 16px;
+  margin: 0px 5px 0px 10px;
+  font-size: 22px;
+  color: #eba0ac;
+}
+
+#battery {
+  border-radius: 16px;
+  margin: 0px 10px 0px 5px;
+  font-size: 18px;
+  color: #c8f0c7;
+}
+
+#custom-clock-minutes,
+#custom-clock-hours {
+  font-size: 23px;
+}
+
+#custom-clock-hours {
+  font-weight: bold;
+  margin: 0px 5px 0px -3px;
+  color: #bac2de;
+}
+
+#custom-clock-minutes {
+  margin: 0px 10px 0px 3px;
+  color: #bac2de;
+}
+
+#custom-clock-separator {
+  font-size: 20px;
+  color: #bac2de;
+  margin: 0px 4px 1px 4px;
+}
+
+#custom-date {
+  font-size: 18px;
+  margin: 0px 20px 0px -1px;
+  color: #eba0ac;
+}
+
+#custom-music-symbol {
+  color: #eba0ac;
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+#custom-music {
+  color: #b4befe;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#custom-prev,
+#custom-next {
+  color: #afd0fc;
+  font-size: 22px;
+  margin: 3px 8px 0px 8px;
+}
+
+#custom-prev {
+  margin: 3px 8px 0px 5px;
+}
+
+#custom-play-pause {
+  color: #94e2d5;
+  font-size: 24px;
+  margin: 3px 8px 0px 8px;
+}
+
+#tray {
+  margin: 0px 10px 0px 5px;
+}
+
+#workspaces button:nth-child(1) { 
+    color: #FF0000; /* Blinky - Rojo */ 
+}
+#workspaces button:nth-child(2) { 
+    color: #FFB8FF; /* Pinky - Rosa */ 
+}
+#workspaces button:nth-child(3) { 
+    color: #00FFFF; /* Inky - Cian */ 
+}
+#workspaces button:nth-child(4) { 
+    color: #FFB852; /* Clyde - Naranja */ 
+}
+
+#workspaces button.empty {
+    color: #555555; /* Gris oscuro para ocultarlos visualmente */
+}
+
+#workspaces button.focused {
+    color: #FFFF00; /* Amarillo brillante */
+}
+
+#workspaces button {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}

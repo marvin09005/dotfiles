@@ -1,0 +1,14 @@
+input type:keyboard {
+    repeat_delay 250
+    repeat_rate 50
+    xkb_numlock enabled
+    xkb_layout "latam"
+    xkb_options "grp:alt_shift_toggle,caps:lock"
+}
+
+input type:touchpad {
+      dwt disable
+      tap enabled
+      drag_lock disabled
+      natural_scroll enabled 
+}

@@ -1,0 +1,310 @@
+{
+    "layer": "top",
+    "position": "top",
+    "margin-left": 10,
+    "margin-right": 10,
+    "margin-top": 5,
+    "margin-bottom": 0,
+    "height": 20,
+    // Choose the order of the modules
+    //###################// Modules //###################//
+    "modules-left": [
+        "sway/workspaces",
+        "sway/window"
+    ],
+    "modules-center": [
+        "custom/music-symbol",
+        "group/music"
+    ],
+    "modules-right": [
+        "group/light",
+        "group/audio",
+        "group/wifi",
+        "bluetooth",
+        "custom/separator",
+        "battery",
+        "group/tray",
+        "group/clock-date"
+    ],
+    //##################// Workspace //##################//
+    "sway/workspaces": {
+        "format": "{icon}",
+        "format-icons": {
+            "default": "󰊠", // Ícono de fantasma para los inactivos
+            "focused": "󰮯"  // Ícono de Pacman para el activo
+        },
+        "persistent-workspaces": {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": []
+        }
+    },
+    //####################// Window //####################//
+    "sway/window": {
+        "format": "{}",
+        "max-length": 50,
+        "tooltip": false
+    },
+    //####################// Light //####################//
+    "group/light": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 500,
+            "children-class": "light-drawer",
+            "transition-left-to-right": true
+        },
+        "modules": [
+            "backlight",
+            "backlight/slider"
+        ]
+    },
+    "backlight": {
+        "device": "amdgpu_bl1",
+        "format": "",
+        "tooltip-format": "brightness at {percent}%"
+    },
+    "backlight/slider": {
+        "device": "amdgpu_bl1",
+        "min": 0,
+        "max": 100,
+        "orientation": "horizontal"
+    },
+    //####################// Audio //####################//
+    "group/audio": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 500,
+            "children-class": "audio-drawer",
+            "transition-left-to-right": true
+        },
+        "modules": [
+            "pulseaudio",
+            "pulseaudio/slider"
+        ]
+    },
+    "pulseaudio": {
+        "format": "",
+        "format-muted": "",
+        "tooltip-format": "volume at {volume}%",
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+    },
+    "pulseaudio/slider": {
+        "min": 0,
+        "max": 100,
+        "orientation": "horizontal"
+    },
+    //###################// Network //###################//
+    "group/wifi": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 500,
+            "children-class": "network-drawer",
+            "transition-left-to-right": true
+        },
+        "modules": [
+            "network",
+            "custom/essid"
+        ]
+    },
+    "network": {
+        "interface": "wlan0",
+        "format": "󰤨",
+        "format-disconnected": "󰤭",
+        "tooltip": false
+    },
+    "custom/essid": {
+        "format": "{}",
+        "exec": "nmcli c | grep wlan0 | awk '{print ($1)}'",
+        "interval": 5,
+        "tooltip": false
+    },
+    //####################// Clock //####################//
+    "group/clock-date": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 500,
+            "children-class": "clock-drawer",
+            "transition-left-to-right": true
+        },
+        "modules": [
+            "group/clock",
+            "custom/date"
+        ]
+    },
+    "group/clock": {
+        "orientation": "inherit",
+        "modules": [
+            "custom/clock-hours",
+            "custom/clock-separator",
+            "custom/clock-minutes"
+        ]
+    },
+    "custom/clock-hours": {
+        "format": "{}",
+        "exec": "date '+%H'",
+        "tooltip": false,
+        "interval": 1
+    },
+    "custom/clock-separator": {
+        "format": "󰇙",
+        "tooltip": false
+    },
+    "custom/clock-minutes": {
+        "format": "{}",
+        "exec": "date '+%M'",
+        "tooltip": false,
+        "interval": 1
+    },
+    "custom/date": {
+        "format": "{}",
+        "exec": "date '+%d/%m'",
+        "on-click": "~/.config/eww/calendar/launch_bar",
+        "tooltip": false,
+        "interval": 30
+    },
+    //####################// Music //####################//
+    "group/music": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 200,
+            "children-class": "music-drawer",
+            "transition-left-to-right": true
+        },
+        "modules": [
+            "custom/music",
+            "custom/prev",
+            "custom/play-pause",
+            "custom/next"
+        ]
+    },
+    "custom/music-symbol": {
+        "format": "  ",
+        "tooltip": false
+    },
+    "custom/music": {
+        "format": "{} ",
+        "escape": true,
+        "interval": 2,
+        "tooltip": false,
+        "exec": "playerctl metadata --format='{{ title }}' 2>/dev/null",
+        "exec-if": "playerctl status 2>/dev/null",
+        "max-length": 50
+    },
+    "custom/prev": {
+        "format": "{}",
+        "exec": "echo '󰒮'",
+        "exec-if": "playerctl status 2>/dev/null",
+        "on-click": "playerctl previous",
+        "interval": 2,
+        "tooltip": false
+    },
+    "custom/play-pause": {
+        "format": "{}",
+        "exec": "playerctl status 2>/dev/null | sed -u 's/Playing/󰏤/;s/Paused/󰐊/;s/Stopped/󰐊/'",
+        "exec-if": "playerctl status 2>/dev/null",
+        "on-click": "playerctl play-pause",
+        "interval": 2,
+        "tooltip": false
+    },
+    "custom/next": {
+        "format": "{}",
+        "exec": "echo '󰒭'",
+        "exec-if": "playerctl status 2>/dev/null",
+        "on-click": "playerctl next",
+        "interval": 2,
+        "tooltip": false
+    },
+//##################// Bluetooth //##################//
+    "bluetooth": {
+        "format": "",
+        "format-disabled": "󰂲",
+        "format-connected": "󰂱",
+        "tooltip-format": "Bluetooth: {status}",
+        "tooltip-format-connected": "Conectado a: {device_alias}",
+        "tooltip-format-enumerate-connected": "{device_alias}",
+        "on-click": "blueman-manager"
+    },
+//###################// Battery //###################//
+    "battery": {
+        "interval": 30,
+        "states": {
+            "warning": 20,
+            "critical": 10
+        },
+        "tooltip-format": "batería al {capacity}%",
+        "format": " {icon} {capacity}%",
+        "format-charging": " {icon} {capacity}%",
+        "format-plugged": " 󰂄 {capacity}%",
+        "format-icons": {
+            "charging": [
+                "󰢜", // 0-10% cargando
+                "󰂆", // 10-20% cargando
+                "󰂇", // 20-30% cargando
+                "󰂈", // 30-40% cargando
+                "󰢝", // 40-50% cargando
+                "󰂉", // 50-60% cargando
+                "󰢞", // 60-70% cargando
+                "󰂊", // 70-80% cargando
+                "󰂋", // 80-90% cargando
+                "󰂅"  // 90-100% cargando
+            ],
+            "default": [
+                "󰁺", // 0-10%
+                "󰁻", // 10-20%
+                "󰁼", // 20-30%
+                "󰁽", // 30-40%
+                "󰁾", // 40-50%
+                "󰁿", // 50-60%
+                "󰂀", // 60-70%
+                "󰂁", // 70-80%
+                "󰂂", // 80-90%
+                "󰁹"  // 90-100%
+            ]
+        }
+    },    
+    //#####################// Tray //####################//
+    "group/tray": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 500,
+            "children-class": "tray-drawer",
+            "transition-left-to-right": true
+        },
+        "modules": [
+            "custom/separator",
+            "tray"
+        ]
+    },
+    "tray": {
+        "icon-size": 21,
+        "spacing": 10
+    },
+    //################// Notifications //################//
+    "custom/notification": {
+        "tooltip": false,
+        "format": " ",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client -d -sw",
+        "escape": true
+    },
+    //####################// Lock //#####################//
+    "custom/lock": {
+        "tooltip": false,
+        "on-click": "hyprlock &",
+        "format": " "
+    },
+    //###################// Power //####################//
+    "custom/power": {
+        "tooltip": false,
+        "on-click": "wlogout &",
+        "format": "⏻ "
+    },
+    "custom/separator": {
+        "format": "〡",
+        "tooltip": false
+    }
+}
