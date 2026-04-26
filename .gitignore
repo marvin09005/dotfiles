@@ -1,3 +1,9 @@
 config/backup/
 capture.sh.bak
 install.sh.bak
+config/zsh/zhistory
+config/zsh/zcompdump*
+.net/
+.ssh/
+*.log
+.env
