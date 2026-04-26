@@ -1,0 +1,1 @@
+../../dotfiles-swayfx/scripts/gnome-window-switch.sh

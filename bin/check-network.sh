@@ -1,0 +1,1 @@
+../../dotfiles-swayfx/server-dots/scripts/check-network.sh

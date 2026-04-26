@@ -1,0 +1,1 @@
+../../dotfiles-swayfx/scripts/wofi_icons.sh
